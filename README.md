@@ -5,7 +5,7 @@ Drawing large data set using D3 ^V4 base on a D3 V3
 * V3
 ```javascript
 this.xAxis = d3.svg.axis()
-		.scale(this.xScale)
+	.scale(this.xScale)
         .orient("bottom")
 ```
 
