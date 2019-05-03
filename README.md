@@ -1,6 +1,6 @@
 # CanvasTimeSeriesD3
 Drawing large data set using D3 ^V4 base on a D3 V3
-## Consider the followings while updating from D3 V3 to D3 ^V4
+### Consider the followings while updating from D3 V3 to D3 ^V4
 
 * V3
 ```javascript
