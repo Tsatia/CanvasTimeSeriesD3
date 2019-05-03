@@ -191,7 +191,33 @@ class CanvasTimeSeriesPlot{
 
 
     setupXScaleAndAxis() {
-        throw new Error("Method not implemented.");
+        this.xScale = d3.scaleTime()
+        .domain(this.calculateXDomain())
+        .rangeRound([0, this.width])
+        .nice()
+        .clamp(true);
+        
+         var formatMilliSecond = d3.timeFormat(".%L"),
+            formatSecond = d3.timeFormat(":%S"),
+            formatHour = d3.timeFormat("%I:%p"),
+            formatWeek = d3.timeFormat("%b %d"),
+            formatMonth = d3.timeFormat("%B"),
+            formatYear = d3.timeFormat("%Y");
+
+        let multiFormat = (date: Date): string =>{
+            return (d3.timeSecond(date) < date ? formatMilliSecond
+            : d3.timeMinute(date) < date ? formatSecond
+            : d3.timeDay(date) < date ? formatHour
+            : d3.timeWeek(date) < date ?  formatWeek
+            : d3.timeYear(date) < date ? formatMonth
+            : formatYear)(date);
+        }
+
+        var xFormat = "%d-%b-%y";
+        this.xAxis = d3.axisBottom(this.xScale)
+        // .tickFormat(multiFormat)
+        .tickFormat(d3.timeFormat(xFormat))
+        // .ticks(d3.timeDay.every(4))
     }
     setupYScaleAndAxis() {
         throw new Error("Method not implemented.");
