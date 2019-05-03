@@ -2,10 +2,12 @@ import * as d3 from 'd3';
 import * as d3Axis from 'd3-axis';
 
 class CanvasTimeSeriesPlot{
-
     parent: d3.Selection<HTMLElement, {} , HTMLElement , {}>;
 	canvasDimensions: Array<number>;
-	config: CanvasTimeSeriesPlot.Config;
+    config: CanvasTimeSeriesPlot.Config;
+    plotLineWidth: number;
+    maxInformationDensity: number;
+	showMarkerDensity: number;
 	data : Array<{xDate: Date; yNum: number}>; 
 	dataIDs: Array<string>;
 	dataLabels: Array<string>;
@@ -15,7 +17,6 @@ class CanvasTimeSeriesPlot{
 	xAxisLabelText: string;
 	yAxisLabelText: string;
 
-	 
 	disableLegend: boolean;
 	invertYAxis: boolean;
 	gridColor: string;
@@ -28,7 +29,8 @@ class CanvasTimeSeriesPlot{
 	legendMargin: number;
 	legendXPadding: number;
 	legendYPadding: number;
-	legendLineHeight: number;
+    legendLineHeight: number;
+    informationDensity: Array<number> 
 	margin: CanvasTimeSeriesPlot.PlotMargins;
 	totalWidth: number;
 	totalHeight: number;
@@ -83,13 +85,16 @@ class CanvasTimeSeriesPlot{
             this.totalHeight = Math.max(this.minCanvasHeight, canvasDimensions[1]);
             this.width = this.totalWidth - this.margin.left! - this.margin.right!;
             this.height = this.totalHeight - this.margin.top! - this.margin.bottom!;
+	        this.informationDensity = [];
+	        this.plotLineWidth = config.plotLineWidth || 1;
+	        this.maxInformationDensity = config.maxInformationDensity || 2.0;
+	        this.showMarkerDensity = config.showMarkerDensity || 0.14;
 
 
             this.div = this.parent.append("div")
                 .attr("class", "cvpChart")
                 .style("width", this.totalWidth+"px")
                 .style("height", this.totalHeight+"px");
-
             this.d3Canvas = this.div.append("canvas")
                 .attr("class", "cvpCanvas")
                 .attr("width", this.width)
@@ -98,12 +103,10 @@ class CanvasTimeSeriesPlot{
                      this.margin.left + "px");
             // where to draw the data
             this.canvas = this.d3Canvas.node().getContext("2d");
-
             this.svg = this.div.append("svg")
                 .attr("class", "cvpSVG")
                 .attr("width", this.totalWidth)
                 .attr("height", this.totalHeight);
-
             this.svgTranslateGroup = this.svg.append("g").
                 attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
                 
@@ -112,13 +115,11 @@ class CanvasTimeSeriesPlot{
 
             this.yAxisGroup = this.svgTranslateGroup.append("g")
 		        .attr("class", "y cvpAxis")
-                .call(this.yAxis);
-                
+                .call(this.yAxis);     
 	        this.xAxisGroup = this.svgTranslateGroup.append("g")
 		        .attr("class", "x cvpAxis")
 		        .attr("transform", "translate(0,"+this.height+")")
 		        .call(this.xAxis);
-
         	if(this.xAxisLabelText.length > 0) {
 		        this.xAxisLabel = this.svgTranslateGroup.append("text")
 			    .attr("class", "cvpLabel")
@@ -126,8 +127,7 @@ class CanvasTimeSeriesPlot{
 			    .attr("y", this.height + 40)
 			    .attr("text-anchor", "middle")
 			    .text(this.xAxisLabelText);
-            }
-            
+            }    
 	        if(this.yAxisLabelText.length > 0) {
 		        this.yAxisLabel = this.svg.append("text")
 			    .attr("class", "cvpLabel")
@@ -136,13 +136,59 @@ class CanvasTimeSeriesPlot{
 			    .attr("transform", "rotate(-90)")
 			    .attr("text-anchor", "middle")
 			    .text(this.yAxisLabelText);
-            }
-            
+            }            
             this.drawCanvas();
 
             
     }
     // Constructor ends here
+
+
+    addDataSet (uniqueID: string, label: string, dataSet: Array<{xDate: Date, yNum: number}>, colorString: string,
+         updateDomains: boolean, copyData?: boolean): void{
+        this.informationDensity.push(1);		
+		this.dataIDs.push(uniqueID);
+		this.dataLabels.push(label);
+		this.dataColors.push(colorString);
+		this.displayIndexStart.push(0);
+		this.displayIndexEnd.push(0);
+		dataSet = dataSet || []; 
+		if(copyData) {
+            //clear the list and get new data
+            this.data = []
+            this.data = dataSet;	
+		}else{
+            // append data to the existing ones
+			dataSet.forEach(elem =>{
+				this.data.push(elem);
+			});
+		}
+		this.updateLegend();
+		if(updateDomains) {
+			this.updateDomains(this.calculateXDomain(), this.calculateYDomain(), true);
+		}else{
+			this.updateDisplayIndices();
+		    this.drawCanvas();
+		}
+    }
+    
+
+    updateLegend() {
+        throw new Error("Method not implemented.");
+    }
+    updateDomains(arg0: any, arg1: any, arg2: boolean) {
+        throw new Error("Method not implemented.");
+    }
+    calculateXDomain(): any {
+        throw new Error("Method not implemented.");
+    }
+    calculateYDomain(): any {
+        throw new Error("Method not implemented.");
+    }
+    updateDisplayIndices() {
+        throw new Error("Method not implemented.");
+    }
+
 
     setupXScaleAndAxis() {
         throw new Error("Method not implemented.");
@@ -190,7 +236,7 @@ export namespace CanvasTimeSeriesPlot{
 		showMarkerDensity?: number;
 		vectorScale?: number;
 		scaleUnits?: string;
-		scaleLength?: number;
+        scaleLength?: number;
 	}
 
 	export interface PlotMargins{
