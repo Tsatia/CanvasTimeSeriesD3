@@ -1,0 +1,26 @@
+{
+  "name": "canvastimeseriesd3",
+  "version": "1.0.0",
+  "description": "And update from d3 v3 to a bigger one",
+  "main": "demo.html",
+  "dependencies": {
+    "d3": "^5.9.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Codemann12/CanvasTimeSeriesD3.git"
+  },
+  "keywords": [
+    "d3"
+  ],
+  "author": "Cedric Tsatia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Codemann12/CanvasTimeSeriesD3/issues"
+  },
+  "homepage": "https://github.com/Codemann12/CanvasTimeSeriesD3#readme"
+}
