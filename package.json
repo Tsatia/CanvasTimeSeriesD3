@@ -4,6 +4,8 @@
   "description": "And update from d3 v3 to a bigger version",
   "main": "index.ts",
   "dependencies": {
+    "@types/d3": "^5.7.2",
+    "@types/d3-axis": "^1.0.12",
     "d3": "^5.9.2",
     "typescript": "^3.4.5"
   },
