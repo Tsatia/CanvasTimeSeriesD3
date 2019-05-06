@@ -13,3 +13,4 @@ function addDays(date: Date, days: number): Date {
 // var plot2 = new CanvasTimeSeriesPlot(d3.select("#maincontainer"), getDemoPlotSize(), {
 //     yAxisLabel: "Voltage [V]"
 // });
+
