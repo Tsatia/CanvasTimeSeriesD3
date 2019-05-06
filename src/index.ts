@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import * as d3Axis from 'd3-axis';
 
 class CanvasTimeSeriesPlot{
+
     parent: d3.Selection<HTMLElement, {} , HTMLElement , {}>;
 	canvasDimensions: Array<number>;
     config: CanvasTimeSeriesPlot.Config;
@@ -43,14 +44,17 @@ class CanvasTimeSeriesPlot{
 	svg: d3.Selection<any, {} , any , {}>;
 	svgTranslateGroup: d3.Selection<any, {} , any , {}>;
 
+    // Parameter to draw the axis and labels
 	xScale: d3Axis.AxisScale<Date>;
 	yScale: d3Axis.AxisScale<number>;
-	xAxis: d3Axis.Axis<d3Axis.AxisDomain>;
-	yAxis: d3Axis.Axis<d3Axis.AxisDomain>;
+	xAxis: d3Axis.Axis<Date>;
+	yAxis: d3Axis.Axis<number>;
 	xAxisLabel: d3.Selection<SVGTextElement, {} , any , {}>; 
 	yAxisLabel: d3.Selection<SVGTextElement, {} , any , {}>;
 	yAxisGroup: d3.Selection<any, {} , any , {}>;
-	xAxisGroup: d3.Selection<any, {} , any , {}>;
+    xAxisGroup: d3.Selection<any, {} , any , {}>;
+
+    
     
     constructor(parentElement: d3.Selection<HTMLElement, {} , HTMLElement , {}>, canvasDimensions: Array<number>, 
         config: CanvasTimeSeriesPlot.Config = {}){
@@ -107,9 +111,9 @@ class CanvasTimeSeriesPlot{
                 .attr("class", "cvpSVG")
                 .attr("width", this.totalWidth)
                 .attr("height", this.totalHeight);
-            this.svgTranslateGroup = this.svg.append("g").
-                attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-                
+            this.svgTranslateGroup = this.svg.append("g")
+                .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+                  
             this.setupXScaleAndAxis();
             this.setupYScaleAndAxis();
 
@@ -145,7 +149,7 @@ class CanvasTimeSeriesPlot{
 
 
     addDataSet (uniqueID: string, label: string, dataSet: Array<{xDate: Date, yNum: number}>, colorString: string,
-         updateDomains: boolean, copyData?: boolean): void{
+        updateDomains: boolean, copyData?: boolean): void{
         this.informationDensity.push(1);		
 		this.dataIDs.push(uniqueID);
 		this.dataLabels.push(label);
@@ -179,12 +183,18 @@ class CanvasTimeSeriesPlot{
     updateDomains(arg0: any, arg1: any, arg2: boolean) {
         throw new Error("Method not implemented.");
     }
-    calculateXDomain(): any {
-        throw new Error("Method not implemented.");
+
+    calculateXDomain(): Array<Date>{
+        if(this.data.length <= 1){
+            // this are just some default values to make it look nice in case of empty values.
+            return [new Date(2017, 0, 1), new Date(2020, 0, 1)]
+		}   		
+		return d3.extent(this.data, function(d) { return d.xDate;});
     }
-    calculateYDomain(): any {
-        throw new Error("Method not implemented.");
-    }
+
+    calculateYDomain(): Array<number> { return d3.extent(this.data, function(d) { return d.yNum;}); }
+
+
     updateDisplayIndices() {
         throw new Error("Method not implemented.");
     }
@@ -197,7 +207,7 @@ class CanvasTimeSeriesPlot{
         .nice()
         .clamp(true);
         
-         var formatMilliSecond = d3.timeFormat(".%L"),
+        var formatMilliSecond = d3.timeFormat(".%L"),
             formatSecond = d3.timeFormat(":%S"),
             formatHour = d3.timeFormat("%I:%p"),
             formatWeek = d3.timeFormat("%b %d"),
@@ -219,9 +229,20 @@ class CanvasTimeSeriesPlot{
         .tickFormat(d3.timeFormat(xFormat))
         // .ticks(d3.timeDay.every(4))
     }
+
+
     setupYScaleAndAxis() {
-        throw new Error("Method not implemented.");
+        this.yScale = d3.scaleLinear()
+            .domain(this.calculateYDomain())
+            .rangeRound(this.invertYAxis ? [0, this.height] : [this.height, 0])
+            .nice()
+            .clamp(true);
+    
+        this.yAxis = d3.axisLeft(this.yScale)
+            .ticks(Math.round(this.yTicksPerPixel*this.height));
     }
+
+
 
     drawCanvas() {
         throw new Error("Method not implemented.");

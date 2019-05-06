@@ -13,3 +13,9 @@ this.xAxis = d3.svg.axis()
 ```javascript
 this.xAxis = d3.axisBottom(this.xScale)
 ```
+
+Using the same logic you can do this for all the orientation.
+eg: 
+```javascript
+ this.yAxis = d3.axisLeft(this.yScale)
+```
