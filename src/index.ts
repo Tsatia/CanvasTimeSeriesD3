@@ -8,8 +8,8 @@ class CanvasTimeSeriesPlot{
     config: CanvasTimeSeriesPlot.Config;
     plotLineWidth: number;
     maxInformationDensity: number;
-	showMarkerDensity: number;
-	data : Array<{xDate: Date; yNum: number}>; 
+    showMarkerDensity: number;
+	data : Array<Array<{xDate: Date; yNum: number}>>; 
 	dataIDs: Array<string>;
 	dataLabels: Array<string>;
 	displayIndexStart: Array<number>; 
@@ -161,14 +161,16 @@ class CanvasTimeSeriesPlot{
 		this.displayIndexEnd.push(0);
 		dataSet = dataSet || []; 
 		if(copyData) {
-            //clear the list and get new data
-            this.data = []
-            this.data = dataSet;	
+            var dataIndex = this.data.length;
+            this.data.push([]);
+            var dataSetLength = dataSet.length;
+            for(var i=0; i<dataSetLength; ++i) {
+                this.data[dataIndex].push({...dataSet[i]});
+            }	
 		}else{
             // append data to the existing ones
-			dataSet.forEach(elem =>{
-				this.data.push(elem);
-			});
+			this.data.push(dataSet);
+			
 		}
 		this.updateLegend();
 		if(updateDomains) {
@@ -179,7 +181,7 @@ class CanvasTimeSeriesPlot{
 		}
     }
     
-    
+
     updateLegend() {
         if(this.disableLegend){
 			return;
@@ -225,7 +227,6 @@ class CanvasTimeSeriesPlot{
 	this.legend.attr("transform", "translate("+(this.width - this.legendWidth - this.legendMargin)+", "+this.legendMargin+")");
     }
 
-
     updateDomains(arg0: any, arg1: any, arg2: boolean) {
         throw new Error("Method not implemented.");
     }
@@ -240,11 +241,9 @@ class CanvasTimeSeriesPlot{
 
     calculateYDomain(): Array<number> { return d3.extent(this.data, function(d) { return d.yNum;}); }
 
-
     updateDisplayIndices() {
         throw new Error("Method not implemented.");
     }
-
 
     setupXScaleAndAxis() {
         this.xScale = d3.scaleTime()
@@ -276,7 +275,6 @@ class CanvasTimeSeriesPlot{
         // .ticks(d3.timeDay.every(4))
     }
 
-
     setupYScaleAndAxis() {
         this.yScale = d3.scaleLinear()
             .domain(this.calculateYDomain())
@@ -288,13 +286,41 @@ class CanvasTimeSeriesPlot{
             .ticks(Math.round(this.yTicksPerPixel*this.height));
     }
 
-
-
     drawCanvas() {
-        throw new Error("Method not implemented.");
+        this.canvas.clearRect(0, 0, this.width, this.height);
+        this.drawGrid();
+        var nDataSets = this.data.length;
+        for(var i=0; i<nDataSets; ++i) {
+            this.drawDataSet(i);
+        }
     }
 
+    drawGrid() {
+        this.canvas.lineWidth = 0.9;
+		this.canvas.strokeStyle = this.gridColor;
+		this.canvas.beginPath();
+		for(var i = 1; i <=  Math.floor(this.width); i++){
+			var x = (i * 10);
+			this.canvas.moveTo(0, x);
+			this.canvas.lineTo(this.width, x);						
+		}
 
+		for(var j = 1; j <=  Math.floor(this.height); j++){
+			var y = (j * 10);
+			this.canvas.moveTo(y, 0);
+			this.canvas.lineTo(y, this.height);						
+		}
+
+		this.canvas.stroke();
+		this.canvas.closePath();
+    }
+
+    drawDataSet(dataIndex: number) {
+        var d = this.data[dataIndex];
+        if(d == null) {return;}
+        
+    
+    }
 
 
 
