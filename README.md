@@ -1,11 +1,11 @@
 # CanvasTimeSeriesD3
 Drawing large data set using D3 ^V4 base on a D3 V3
-###Consider the followings while updating from D3 V3 to D3 ^V4
+#### Consider the followings while updating from D3 V3 to D3 ^V4
 
 * V3
 ```javascript
 this.xAxis = d3.svg.axis()
-		.scale(this.xScale)
+	.scale(this.xScale)
         .orient("bottom")
 ```
 
@@ -13,9 +13,8 @@ this.xAxis = d3.svg.axis()
 ```javascript
 this.xAxis = d3.axisBottom(this.xScale)
 ```
+The same logic can be used for any direction. Eg:
 
-Using the same logic you can do this for all the orientation.
-eg: 
 ```javascript
- this.yAxis = d3.axisLeft(this.yScale)
+this.yAxis = d3.axisLeft(this.yScale)
 ```
