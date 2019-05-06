@@ -31,6 +31,9 @@ class CanvasTimeSeriesPlot{
 	legendXPadding: number;
 	legendYPadding: number;
     legendLineHeight: number;
+    legend: d3.Selection<any, {} , any , {}>; 
+    legendWidth: number;
+    legendBG: any;
     informationDensity: Array<number> 
 	margin: CanvasTimeSeriesPlot.PlotMargins;
 	totalWidth: number;
@@ -176,10 +179,53 @@ class CanvasTimeSeriesPlot{
 		}
     }
     
-
+    
     updateLegend() {
-        throw new Error("Method not implemented.");
+        if(this.disableLegend){
+			return;
+		}
+
+		if(this.legend){
+			this.legend.remove();
+			this.legend = null;
+			this.legendWidth = 0;
+		}
+
+		if(this.data.length == 0){
+			return;
+		}
+
+		this.legend = this.svgTranslateGroup.append("g")
+			.attr("class", "cvpLegend")
+			.attr("transform", "translate("+(this.width + this.margin.right + 1)+", "+this.legendMargin+")");
+		this.legendBG = this.legend.append("rect")
+			.attr("class", "cvpLegendBG")
+			.attr("x", 0)
+			.attr("y", 0)
+			.attr("width", 250)
+			.attr("height", this.legendYPadding + this.dataLabels.length*(this.legendYPadding+this.legendLineHeight) - 1);
+
+		var maxTextLen = 0;
+		this.dataLabels.forEach((s: string, i:number) => {
+			this.legend.append("rect")
+			.attr("x", this.legendXPadding)
+			.attr("y", this.legendYPadding + i*(this.legendYPadding+this.legendLineHeight))
+			.attr("width", this.legendLineHeight)
+			.attr("height", this.legendLineHeight)
+			.attr("fill", this.dataColors[i])
+			.attr("stroke", "none");
+		var textElem = this.legend.append("text")
+			.attr("x", 2*this.legendXPadding + this.legendLineHeight - 1)
+			.attr("y", this.legendYPadding + this.legendLineHeight + i*(this.legendYPadding+this.legendLineHeight) - 1)
+			.text(this.dataLabels[i].length > 0 ? this.dataLabels[i] : this.dataIDs[i]); 
+		maxTextLen = Math.max(maxTextLen, textElem.node().getComputedTextLength());
+	});
+	this.legendWidth = 3*this.legendXPadding + this.legendLineHeight + maxTextLen - 1;
+	this.legendBG.attr("width", this.legendWidth);
+	this.legend.attr("transform", "translate("+(this.width - this.legendWidth - this.legendMargin)+", "+this.legendMargin+")");
     }
+
+
     updateDomains(arg0: any, arg1: any, arg2: boolean) {
         throw new Error("Method not implemented.");
     }
