@@ -234,12 +234,26 @@ class CanvasTimeSeriesPlot{
     calculateXDomain(): Array<Date>{
         if(this.data.length <= 1){
             // this are just some default values to make it look nice in case of empty values.
-            return [new Date(2017, 0, 1), new Date(2020, 0, 1)]
-		}   		
-		return d3.extent(this.data, function(d) { return d.xDate;});
+            return [new Date(2017, 0, 1), new Date(2020, 0, 1)];
+        } 
+        var minMaxHolder: Array<Date> = [];  		
+        this.data.forEach(dataSet => {
+            var tupel = (d3.extent(dataSet, function(d) { return d.xDate;}));
+            minMaxHolder.push(tupel[0]);
+            minMaxHolder.push(tupel[1]);
+        });
+        return d3.extent(minMaxHolder, function(d) { return d;});		
     }
 
-    calculateYDomain(): Array<number> { return d3.extent(this.data, function(d) { return d.yNum;}); }
+    calculateYDomain(): Array<number> {
+        var minMaxHolder: Array<number> = [];  		
+        this.data.forEach(dataSet => {
+            var tupel = (d3.extent(dataSet, function(d) { return d.yNum;}));
+            minMaxHolder.push(tupel[0]);
+            minMaxHolder.push(tupel[1]);
+        });
+        return d3.extent(minMaxHolder, function(d) { return d;});		
+    }
 
     updateDisplayIndices() {
         throw new Error("Method not implemented.");
