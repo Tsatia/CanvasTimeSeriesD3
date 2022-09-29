@@ -6,7 +6,7 @@
   "dependencies": {
     "@types/d3": "^5.7.2",
     "@types/d3-axis": "^1.0.12",
-    "d3": "^5.9.2",
+    "d3": "^7.6.1",
     "typescript": "^3.4.5"
   },
   "devDependencies": {},
